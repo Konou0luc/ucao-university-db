@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { validateBody } from "../../../shared/validators/validateBody";
+import { requireAuth, requirePermissions } from "../../auth/service/auth-guard.service";
+import { LevelController } from "../controller/level.controller";
+import { LevelRepository } from "../repository/level.repository";
+import { LevelService } from "../service/level.service";
+import { levelSchema } from "../validator/level.validator";
+const controller = new LevelController(new LevelService(new LevelRepository()));
+export const levelRouter = Router();
+levelRouter.use(requireAuth);
+levelRouter.get("/levels", requirePermissions("structures:read"), (req,res,next)=>controller.list(req,res,next));
+levelRouter.post("/levels", requirePermissions("structures:write"), validateBody(levelSchema), (req,res,next)=>controller.create(req,res,next));

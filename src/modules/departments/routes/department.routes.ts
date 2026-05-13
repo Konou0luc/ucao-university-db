@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { validateBody } from "../../../shared/validators/validateBody";
+import { requireAuth, requirePermissions } from "../../auth/service/auth-guard.service";
+import { DepartmentController } from "../controller/department.controller";
+import { DepartmentRepository } from "../repository/department.repository";
+import { DepartmentService } from "../service/department.service";
+import { departmentSchema } from "../validator/department.validator";
+const controller = new DepartmentController(new DepartmentService(new DepartmentRepository()));
+export const departmentRouter = Router();
+departmentRouter.use(requireAuth);
+departmentRouter.get("/departments", requirePermissions("structures:read"), (req,res,next)=>controller.list(req,res,next));
+departmentRouter.post("/departments", requirePermissions("structures:write"), validateBody(departmentSchema), (req,res,next)=>controller.create(req,res,next));

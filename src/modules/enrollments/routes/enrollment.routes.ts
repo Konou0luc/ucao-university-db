@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { validateBody } from "../../../shared/validators/validateBody";
+import { requireAuth, requirePermissions } from "../../auth/service/auth-guard.service";
+import { EnrollmentController } from "../controller/enrollment.controller";
+import { EnrollmentRepository } from "../repository/enrollment.repository";
+import { EnrollmentService } from "../service/enrollment.service";
+import { enrollmentSchema } from "../validator/enrollment.validator";
+const controller = new EnrollmentController(new EnrollmentService(new EnrollmentRepository()));
+export const enrollmentRouter = Router();
+enrollmentRouter.use(requireAuth);
+enrollmentRouter.get("/enrollments", requirePermissions("enrollments:read"), (req,res,next)=>controller.list(req,res,next));
+enrollmentRouter.post("/enrollments", requirePermissions("enrollments:write"), validateBody(enrollmentSchema), (req,res,next)=>controller.create(req,res,next));
