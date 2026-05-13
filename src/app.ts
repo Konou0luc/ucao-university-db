@@ -18,7 +18,7 @@ import { adminRouter } from "./modules/admins/routes/admin.routes";
 import {
   buildSwaggerIndexHtml,
   swaggerUiIndexHtmlHandler,
-  swaggerUiInitMiddleware,
+  swaggerUiServeMiddlewares,
 } from "./shared/swagger/swaggerDocs";
 
 const swaggerIndexHtml = buildSwaggerIndexHtml(swaggerDocument, {
@@ -65,7 +65,7 @@ app.get("/", async (_req, res) => {
 });
 
 app.get("/api/docs.json", (_req, res) => res.json(swaggerDocument));
-app.use("/api/docs", swaggerUiInitMiddleware(), swaggerUiIndexHtmlHandler(swaggerIndexHtml));
+app.use("/api/docs", ...swaggerUiServeMiddlewares(), swaggerUiIndexHtmlHandler(swaggerIndexHtml));
 
 app.use("/api", healthRouter);
 app.use("/api", authRouter);
