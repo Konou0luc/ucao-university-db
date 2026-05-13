@@ -66,3 +66,5 @@ app.use("/api", adminRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
+
+export default app;
