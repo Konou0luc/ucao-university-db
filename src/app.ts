@@ -1,6 +1,5 @@
 import express from "express";
 import pinoHttp from "pino-http";
-import swaggerUi from "swagger-ui-express";
 import { logger } from "./infrastructure/logger/logger";
 import { prisma } from "./infrastructure/prisma/client";
 import { swaggerDocument } from "./docs/swagger";
@@ -15,6 +14,15 @@ import { departmentRouter } from "./modules/departments/routes/department.routes
 import { levelRouter } from "./modules/levels/routes/level.routes";
 import { enrollmentRouter } from "./modules/enrollments/routes/enrollment.routes";
 import { adminRouter } from "./modules/admins/routes/admin.routes";
+import {
+  buildSwaggerIndexHtml,
+  swaggerUiIndexHtmlHandler,
+  swaggerUiInitMiddleware,
+} from "./shared/swagger/swaggerDocs";
+
+const swaggerIndexHtml = buildSwaggerIndexHtml(swaggerDocument, {
+  title: "UCAO University API",
+});
 
 export const app = express();
 
@@ -55,7 +63,7 @@ app.get("/", async (_req, res) => {
 });
 
 app.get("/api/docs.json", (_req, res) => res.json(swaggerDocument));
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
+app.use("/api/docs", swaggerUiInitMiddleware(), swaggerUiIndexHtmlHandler(swaggerIndexHtml));
 
 app.use("/api", healthRouter);
 app.use("/api", authRouter);
